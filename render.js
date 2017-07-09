@@ -4,6 +4,7 @@ import {
 } from 'react-apollo';
 import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router'
+import Helmet from 'react-helmet'
 
 // this is necessary to make apollo work on the server
 import 'isomorphic-fetch'
@@ -56,28 +57,46 @@ export default (req, res) => {
     const initialState = {
       apollo: client.getInitialState(),
     };
+
+    const helmet = fillHelmetDefaults(Helmet.renderStatic());
     
     if (context.url) {
       // a React <Redirect> happened
       res.redirect(301, context.url);
     } else {
-      res.send(renderPage(appHtml, initialState));
+      res.send(renderPage(appHtml, helmet, initialState));
     }
   });
 }
 
-function renderPage(html, state) {
+function fillHelmetDefaults(helmet) {
+  // define some defaults that will be overriden by the real helmet data
+  return Object.assign({},
+    {
+      title: 'react-render-server',
+      meta: '<meta charset="utf-8">',
+      link: '',
+      bodyAttributes: '',
+      htmlAttributes: '',
+    },
+    helmet,
+  );
+}
+
+function renderPage(appHtml, helmet, state) {
   if (state == null) {
     state = {}
   }
   return `
     <!DOCTYPE html>
+    <html ${helmet.htmlAttributes.toString()}>
       <head>
-        <meta charset="utf-8">
-        <title>react-render-server</title>
+        ${helmet.title.toString()}
+        ${helmet.meta.toString()}
+        ${helmet.link.toString()}
       </head>
-      <body>
-        <div id="app">${html}</div>
+      <body ${helmet.bodyAttributes.toString()}>
+        <div id="app">${appHtml}</div>
         <script type="text/javascript">
           window.__APOLLO_STATE__=${JSON.stringify(state).replace(/</g, '\\u003c')};
         </script>
