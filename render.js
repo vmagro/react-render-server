@@ -9,7 +9,8 @@ import { StaticRouter } from 'react-router'
 import 'isomorphic-fetch'
 
 const isDev = process.env.NODE_ENV == 'development'
-const routesPath = '../client/routes';
+const routesPath = process.env.ROUTES_FILE;
+const graphql = process.env.GRAPHQL_ENDPOINT;
 
 let routes = require(routesPath).default;
 
@@ -31,7 +32,7 @@ export default (req, res) => {
     // Remember that this is the interface the SSR server will use to connect to the
     // API server, so we need to ensure it isn't firewalled, etc
     networkInterface: createNetworkInterface({
-      uri: 'http://localhost:8000/graphql',
+      uri: graphql,
       opts: {
         credentials: 'same-origin',
         headers: {
@@ -73,7 +74,7 @@ function renderPage(html, state) {
     <!DOCTYPE html>
       <head>
         <meta charset="utf-8">
-        <title>django-react-starter</title>
+        <title>react-render-server</title>
       </head>
       <body>
         <div id="app">${html}</div>
