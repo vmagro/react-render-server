@@ -9,10 +9,7 @@ import Helmet from 'react-helmet'
 // this is necessary to make apollo work on the server
 import 'isomorphic-fetch'
 
-const isDev = process.env.NODE_ENV == 'development'
-const routesPath = process.env.ROUTES_FILE;
-const graphql = process.env.GRAPHQL_ENDPOINT;
-const bundleUrl = process.env.BUNDLE_URL;
+import { isDev, routesPath, graphql, bundleUrl } from './config'
 
 let routes = require(routesPath).default;
 
