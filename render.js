@@ -12,6 +12,7 @@ import 'isomorphic-fetch'
 const isDev = process.env.NODE_ENV == 'development'
 const routesPath = process.env.ROUTES_FILE;
 const graphql = process.env.GRAPHQL_ENDPOINT;
+const bundleUrl = process.env.BUNDLE_URL;
 
 let routes = require(routesPath).default;
 
@@ -28,59 +29,62 @@ export default (req, res) => {
     Object.keys(require.cache).forEach((key) => delete require.cache[key])
     routes = require(routesPath).default;
   }
-  const client = new ApolloClient({
-    ssrMode: true,
-    // Remember that this is the interface the SSR server will use to connect to the
-    // API server, so we need to ensure it isn't firewalled, etc
-    networkInterface: createNetworkInterface({
-      uri: graphql,
-      opts: {
-        credentials: 'same-origin',
-        headers: {
-          cookie: req.header('Cookie'),
-        },
-      },
-    }),
-  });
+
 
   const context = {}
-  const app = (
-    <ApolloProvider client={client}>
-      <StaticRouter location={req.url} context={context}>
-        {routes}
-      </StaticRouter>
-    </ApolloProvider>
+  const router = (
+    <StaticRouter location={req.url} context={context}>
+      {routes}
+    </StaticRouter>
   );
 
-  getDataFromTree(app).then(() => {
-    const appHtml = renderToString(app);
+  // using graphql is optional, if its being used, wrap the router component in
+  // an ApolloProvider
+  if (graphql) {
+    const client = new ApolloClient({
+      ssrMode: true,
+      // Remember that this is the interface the SSR server will use to connect to the
+      // API server, so we need to ensure it isn't firewalled, etc
+      networkInterface: createNetworkInterface({
+        uri: graphql,
+        opts: {
+          credentials: 'same-origin',
+          headers: {
+            cookie: req.header('Cookie'),
+          },
+        },
+      }),
+    });
+
+    const app = (
+      <ApolloProvider client={client}>
+        {router}
+      </ApolloProvider>
+    );
+
     const initialState = {
       apollo: client.getInitialState(),
     };
-
-    const helmet = fillHelmetDefaults(Helmet.renderStatic());
-    
-    if (context.url) {
-      // a React <Redirect> happened
-      res.redirect(301, context.url);
-    } else {
-      res.send(renderPage(appHtml, helmet, initialState));
-    }
-  });
+    getDataFromTree(app).then(renderApp.bind(null, app, context, initialState, res));
+  } else { // not using graphql
+    renderApp(router, context, {}, res);
+  }
 }
 
-function fillHelmetDefaults(helmet) {
-  // define some defaults that will be overriden by the real helmet data
-  return Object.assign({},
-    {
-      title: 'react-render-server',
-      meta: '<meta charset="utf-8">',
-      link: '',
-      bodyAttributes: '',
-      htmlAttributes: '',
-    },
-    helmet,
-  );
+/** 
+ * Render app component as a string and send it to the client
+ */
+function renderApp(app, context, initialState, res) {
+  const appHtml = renderToString(app);
+
+  const helmet = Helmet.renderStatic();
+  
+  if (context.url) {
+    // a React <Redirect> happened
+    res.redirect(301, context.url);
+  } else {
+    res.send(renderPage(appHtml, helmet, initialState));
+  }
 }
 
 function renderPage(appHtml, helmet, state) {
@@ -98,9 +102,10 @@ function renderPage(appHtml, helmet, state) {
       <body ${helmet.bodyAttributes.toString()}>
         <div id="app">${appHtml}</div>
         <script type="text/javascript">
-          window.__APOLLO_STATE__=${JSON.stringify(state).replace(/</g, '\\u003c')};
+          window.__APOLLO_STATE__ =
+            ${JSON.stringify(state).replace(/</g, '\\u003c')};
         </script>
-        <script type="text/javascript" src="static/main.bundle.js"></script>
+        <script type="text/javascript" src="${bundleUrl}"></script>
       </body>
     </html>
   `;
