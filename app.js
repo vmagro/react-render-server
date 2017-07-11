@@ -16,5 +16,5 @@ app.use('/static', express.static('../client/dist'));
 app.get('*', render);
 
 app.listen(port, () => {
-  console.log('Listening on port ' + port)
+  console.log('Listening on port ' + port);
 });

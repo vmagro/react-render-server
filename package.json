@@ -7,7 +7,8 @@
     "dev": "NODE_ENV=development node app.js",
     "start": "NODE_ENV=development node app.js",
     "prod": "NODE_ENV=production node app.js",
-    "test": "gulp test"
+    "test": "./node_modules/mocha/bin/mocha lib/**/**.spec.js",
+    "lint": "./node_modules/eslint/bin/eslint.js *.js lib/*.js"
   },
   "author": "Vinnie Magro <v@vinnie.io>",
   "license": "Apache-2.0",
@@ -17,9 +18,14 @@
     "babel-preset-react": "^6.24.1",
     "babel-register": "^6.24.1",
     "browser-sync": "^2.18.12",
+    "chai": "^4.0.2",
     "connect-browser-sync": "^2.1.0",
+    "eslint": "^4.2.0",
+    "eslint-plugin-react": "^7.1.0",
     "gulp": "^3.9.1",
+    "mocha": "^3.4.2",
     "require-reload": "^0.2.2",
+    "supertest": "^3.0.0",
     "webpack": "^3.1.0"
   },
   "dependencies": {

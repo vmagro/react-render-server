@@ -3,7 +3,7 @@ const config = {
   graphql: process.env.GRAPHQL_ENDPOINT,
   bundleUrl: process.env.BUNDLE_URL || '',
   routesPath: process.env.ROUTES_FILE,
-}
+};
 
 if (!config.routesPath) {
   console.error('Must provide ROUTES_FILE');
