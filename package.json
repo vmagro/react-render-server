@@ -4,15 +4,16 @@
   "description": "Lightweight node server to compile and render a React application",
   "main": "main.js",
   "scripts": {
-    "dev": "NODE_ENV=development node app.js",
-    "start": "NODE_ENV=development node app.js",
-    "prod": "NODE_ENV=production node app.js",
-    "test": "./node_modules/mocha/bin/mocha lib/**/**.spec.js",
+    "dev": "NODE_ENV=development node server.js",
+    "start": "NODE_ENV=development node server.js",
+    "prod": "NODE_ENV=production node server.js",
+    "test": "./node_modules/mocha/bin/mocha --compilers js:babel-register lib/**/**.spec.js",
     "lint": "./node_modules/eslint/bin/eslint.js *.js lib/*.js"
   },
   "author": "Vinnie Magro <v@vinnie.io>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "babel-plugin-rewire": "^1.1.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
@@ -24,6 +25,8 @@
     "eslint-plugin-react": "^7.1.0",
     "gulp": "^3.9.1",
     "mocha": "^3.4.2",
+    "mock-require": "^2.0.2",
+    "nock": "^9.0.13",
     "require-reload": "^0.2.2",
     "supertest": "^3.0.0",
     "webpack": "^3.1.0"

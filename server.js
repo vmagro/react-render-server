@@ -5,15 +5,9 @@ const morgan = require('morgan');
 require('babel-register')({presets: ['env', 'react']});
 require('babel-polyfill');
 
-const app = express();
+const app = require('./lib/app').default;
 
 const port = app.get('port') || 3000;
-
-const render = require('./lib/render').default;
-
-app.use(morgan('dev'));
-app.use('/static', express.static('../client/dist'));
-app.get('*', render);
 
 app.listen(port, () => {
   console.log('Listening on port ' + port);
