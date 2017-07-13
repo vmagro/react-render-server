@@ -17,7 +17,7 @@ module.exports = {
     'react',
   ],
   rules: {
-    'eqeqeq': 'error',
+    'eqeqeq': ['error', 'always', {'null': 'never'}],
     'curly': ['error', 'all'],
     'guard-for-in': 'error',
     'no-eval': 'error',
