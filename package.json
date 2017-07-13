@@ -7,12 +7,13 @@
     "dev": "NODE_ENV=development node server.js",
     "start": "NODE_ENV=development node server.js",
     "prod": "NODE_ENV=production node server.js",
-    "test": "./node_modules/mocha/bin/mocha --compilers js:babel-register lib/**/**.spec.js",
+    "test": "./node_modules/mocha/bin/mocha --require babel-register lib/**/**.spec.js",
     "lint": "./node_modules/eslint/bin/eslint.js *.js lib/*.js"
   },
   "author": "Vinnie Magro <v@vinnie.io>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "babel-eslint": "^7.2.3",
     "babel-plugin-rewire": "^1.1.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.6.0",
@@ -39,6 +40,7 @@
     "react-apollo": "^1.4.3",
     "react-dom": "^15.6.1",
     "react-helmet": "^5.1.3",
-    "react-router": "^4.1.1"
+    "react-router": "^4.1.1",
+    "winston": "^2.3.1"
   }
 }
