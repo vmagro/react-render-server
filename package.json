@@ -4,9 +4,12 @@
   "description": "Lightweight node server to compile and render a React application",
   "main": "main.js",
   "scripts": {
-    "dev": "NODE_ENV=development node server.js",
-    "start": "NODE_ENV=development node server.js",
-    "prod": "NODE_ENV=production node server.js",
+    "dev": "NODE_ENV=development ./node_modules/babel-cli/bin/babel-node.js lib/server.js",
+    "clean": "rm -rf build && mkdir build",
+    "babel": "./node_modules/babel-cli/bin/babel.js -d ./build ./lib -s",
+    "build": "npm run clean && npm run babel",
+    "babel-example": "./node_modules/babel-cli/bin/babel.js -d ./build/example ./example -s",
+    "prod": "NODE_ENV=production node ./build/server.js",
     "mocha": "./node_modules/mocha/bin/mocha --require babel-register lib/**/**.spec.js",
     "test": "npm run mocha && npm run lint",
     "lint": "./node_modules/eslint/bin/eslint.js *.js lib/*.js"
@@ -14,6 +17,7 @@
   "author": "Vinnie Magro <v@vinnie.io>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-plugin-rewire": "^1.1.0",
     "babel-polyfill": "^6.23.0",
